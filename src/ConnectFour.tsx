@@ -19,6 +19,7 @@ const COLS = 4;
 const EMPTY_BOARD: Board = Array(ROWS)
   .fill(null)
   .map(() => Array(COLS).fill(null));
+const PIECES_TO_WIN = 4;
 
 const theme = createTheme({
   palette: {
@@ -126,7 +127,7 @@ const ConnectFour: React.FC = () => {
         let count = 1;
 
         // Check positive direction
-        for (let i = 1; i < 4; i++) {
+        for (let i = 1; i < PIECES_TO_WIN; i++) {
           const newRow = row + deltaRow * i;
           const newCol = col + deltaCol * i;
           if (
@@ -143,7 +144,7 @@ const ConnectFour: React.FC = () => {
         }
 
         // Check negative direction
-        for (let i = 1; i < 4; i++) {
+        for (let i = 1; i < PIECES_TO_WIN; i++) {
           const newRow = row - deltaRow * i;
           const newCol = col - deltaCol * i;
           if (
@@ -159,7 +160,7 @@ const ConnectFour: React.FC = () => {
           }
         }
 
-        if (count >= 4) {
+        if (count >= PIECES_TO_WIN) {
           return true;
         }
       }
