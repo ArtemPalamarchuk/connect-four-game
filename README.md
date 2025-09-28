@@ -9,10 +9,12 @@ Prerequisites:
 - npm
 
 Installation & Running:
+```bash
 npm install
 npm run dev
 npm test
 npm run build
+```
 
 ## How to Play
 
