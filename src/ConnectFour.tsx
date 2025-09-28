@@ -116,47 +116,26 @@ const ConnectFour: React.FC = () => {
 
   const checkWin = useCallback(
     (board: Board, row: number, col: number, player: Player): boolean => {
-      const directions = [
-        [0, 1],
-        [1, 0],
-        [1, 1],
-        [1, -1],
-      ];
+      const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
 
       for (const [deltaRow, deltaCol] of directions) {
         let count = 1;
 
-        // Check positive direction
-        for (let i = 1; i < PIECES_TO_WIN; i++) {
-          const newRow = row + deltaRow * i;
-          const newCol = col + deltaCol * i;
-          if (
-            newRow >= 0 &&
-            newRow < ROWS &&
-            newCol >= 0 &&
-            newCol < COLS &&
-            board[newRow][newCol] === player
-          ) {
-            count++;
-          } else {
-            break;
-          }
-        }
-
-        // Check negative direction
-        for (let i = 1; i < PIECES_TO_WIN; i++) {
-          const newRow = row - deltaRow * i;
-          const newCol = col - deltaCol * i;
-          if (
-            newRow >= 0 &&
-            newRow < ROWS &&
-            newCol >= 0 &&
-            newCol < COLS &&
-            board[newRow][newCol] === player
-          ) {
-            count++;
-          } else {
-            break;
+        for (const direction of [1, -1]) {
+          for (let i = 1; i < PIECES_TO_WIN; i++) {
+            const newRow = row + deltaRow * i * direction;
+            const newCol = col + deltaCol * i * direction;
+            if (
+              newRow >= 0 &&
+              newRow < ROWS &&
+              newCol >= 0 &&
+              newCol < COLS &&
+              board[newRow][newCol] === player
+            ) {
+              count++;
+            } else {
+              break;
+            }
           }
         }
 
@@ -183,19 +162,15 @@ const ConnectFour: React.FC = () => {
         }
       }
 
-      // Column is full
       if (targetRow === -1) return;
 
-      // Create new board with the dropped piece
       const newBoard = board.map((row) => [...row]);
       newBoard[targetRow][col] = currentPlayer;
 
-      // Check for win
       if (checkWin(newBoard, targetRow, col, currentPlayer)) {
         setGameStatus('won');
         setWinner(currentPlayer);
       } else {
-        // Switch player
         setCurrentPlayer(currentPlayer === 'red' ? 'black' : 'red');
       }
 
@@ -246,7 +221,6 @@ const ConnectFour: React.FC = () => {
           )}
 
           <GameBoardContainer>
-            {/* Drop buttons */}
             <Grid container>
               {Array.from({ length: COLS }, (_, col) => (
                 <DropButtonContainer key={col}>
@@ -261,7 +235,6 @@ const ConnectFour: React.FC = () => {
               ))}
             </Grid>
 
-            {/* Game board */}
             <GameBoard>
               {board.map((row, rowIndex) => (
                 <BoardRow container key={rowIndex}>
