@@ -4,11 +4,11 @@ A React-based implementation of the classic Connect Four game built with TypeScr
 
 ## Getting Started
 
-Prerequisites:
+## Prerequisites:
 - Node.js (v16 or higher)
 - npm
 
-Installation & Running:
+## Installation & Running:
 ```bash
 npm install
 npm run dev
