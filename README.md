@@ -9,7 +9,7 @@ A React-based implementation of the classic Connect Four game built with TypeScr
 - npm
 
 ### Installation & Running
-
+```bash
 # Install dependencies
 npm install
 
@@ -21,6 +21,7 @@ npm test
 
 # Build for production
 npm run build
+```
 
 # How to Play
 
