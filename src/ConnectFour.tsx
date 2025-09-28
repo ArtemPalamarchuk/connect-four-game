@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { styled } from '@mui/material/styles';
 import {
   Box,
   Button,
@@ -19,7 +20,6 @@ const EMPTY_BOARD: Board = Array(ROWS)
   .fill(null)
   .map(() => Array(COLS).fill(null));
 
-// Theme with blue primary color (change to purple or green by uncommenting desired line)
 const theme = createTheme({
   palette: {
     primary: {
@@ -30,20 +30,96 @@ const theme = createTheme({
   },
 });
 
+const GameContainer = styled(Box)({
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const HeaderSection = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(4),
+  textAlign: 'center',
+}));
+
+const GameContent = styled(Box)({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const GameBoardContainer = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  width: '100%',
+  paddingLeft: '7%',
+  paddingRight: '7%',
+});
+
+const DropButton = styled(Button)({
+  height: '50px',
+  fontSize: '1.6rem',
+  minWidth: 'unset',
+  width: '100%',
+  '&:not(:disabled):hover': {
+    backgroundColor: 'rgba(0,0,0,0.04)',
+  },
+});
+
+const GameBoard = styled(Paper)({
+  width: '100%',
+});
+
+const BoardRow = styled(Grid)({
+  justifyContent: 'space-between',
+});
+
+const CellContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  display: 'flex',
+  justifyContent: 'center',
+  border: '1px solid',
+  borderColor: theme.palette.primary.main,
+}));
+
+const BoardCell = styled(Box)({
+  height: '50px',
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '1.6rem',
+});
+
+const ResetButton = styled(Button)(({ theme }) => ({
+  width: 'fit-content',
+  fontSize: '16px',
+  marginTop: theme.spacing(2),
+  marginLeft: 'auto',
+  marginRight: 'auto',
+}));
+
+const DropButtonContainer = styled(Box)({
+  flex: 1,
+  display: 'flex',
+  justifyContent: 'center',
+});
+
 const ConnectFour: React.FC = () => {
   const [board, setBoard] = useState<Board>(EMPTY_BOARD);
   const [currentPlayer, setCurrentPlayer] = useState<Player>('red');
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
   const [winner, setWinner] = useState<Player>(null);
 
-  // Check for win condition
   const checkWin = useCallback(
     (board: Board, row: number, col: number, player: Player): boolean => {
       const directions = [
-        [0, 1], // horizontal
-        [1, 0], // vertical
-        [1, 1], // diagonal \
-        [1, -1], // diagonal /
+        [0, 1],
+        [1, 0],
+        [1, 1],
+        [1, -1],
       ];
 
       for (const [deltaRow, deltaCol] of directions) {
@@ -93,7 +169,6 @@ const ConnectFour: React.FC = () => {
     []
   );
 
-  // Drop piece in column
   const dropPiece = useCallback(
     (col: number) => {
       if (gameStatus === 'won') return;
@@ -128,7 +203,6 @@ const ConnectFour: React.FC = () => {
     [board, currentPlayer, gameStatus, checkWin]
   );
 
-  // Reset game
   const resetGame = useCallback(() => {
     setBoard(EMPTY_BOARD);
     setCurrentPlayer('red');
@@ -136,7 +210,6 @@ const ConnectFour: React.FC = () => {
     setWinner(null);
   }, []);
 
-  // Get piece icon
   const getPieceIcon = (piece: Player): string => {
     switch (piece) {
       case 'red':
@@ -148,140 +221,64 @@ const ConnectFour: React.FC = () => {
     }
   };
 
-  // Check if column is full
   const isColumnFull = (col: number): boolean => {
     return board[0][col] !== null;
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {/* Header section */}
-        <Box sx={{ mt: 4 }}>
-          {/* Title */}
-          <Typography component="h1" variant="h2" sx={{ textAlign: 'center' }}>
+      <GameContainer>
+        <HeaderSection>
+          <Typography component="h1" variant="h2">
             Connect Four!
           </Typography>
-
-          {/* Description */}
-          <Typography component="h2" variant="h6" sx={{ textAlign: 'center' }}>
+          <Typography component="h2" variant="h6">
             Get four of the same color in a row to win!
           </Typography>
-        </Box>
+        </HeaderSection>
 
-        {/* Game content */}
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <GameContent>
           {gameStatus === 'won' && (
             <Typography variant="h5" sx={{ mb: 2 }}>
               Winner is {getPieceIcon(winner)}!
             </Typography>
           )}
 
-          {/* Game board container */}
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'stretch',
-              width: '100%',
-              px: '7%',
-            }}
-          >
+          <GameBoardContainer>
             {/* Drop buttons */}
-            <Grid container sx={{ justifyContent: 'space-between' }}>
+            <Grid container>
               {Array.from({ length: COLS }, (_, col) => (
-                <Box
-                  key={col}
-                  sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}
-                >
-                  <Button
+                <DropButtonContainer key={col}>
+                  <DropButton
                     variant="text"
                     onClick={() => dropPiece(col)}
                     disabled={gameStatus === 'won' || isColumnFull(col)}
-                    sx={{
-                      height: '50px',
-                      fontSize: '1.6rem',
-                      minWidth: 'unset',
-                      width: '100%',
-                      '&:not(:disabled):hover': {
-                        backgroundColor: 'rgba(0,0,0,0.04)',
-                      },
-                    }}
                   >
                     {getPieceIcon(currentPlayer)}
-                  </Button>
-                </Box>
+                  </DropButton>
+                </DropButtonContainer>
               ))}
             </Grid>
 
-            {/* Game board using MUI Grid - на всю ширину */}
-            <Paper sx={{ width: '100%' }}>
+            {/* Game board */}
+            <GameBoard>
               {board.map((row, rowIndex) => (
-                <Grid
-                  container
-                  key={rowIndex}
-                  sx={{ justifyContent: 'space-between' }}
-                >
+                <BoardRow container key={rowIndex}>
                   {row.map((cell, colIndex) => (
-                    <Box
-                      key={`${rowIndex}-${colIndex}`}
-                      sx={{
-                        flex: 1,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        border: '1px solid',
-                        borderColor: 'primary.main',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          height: '50px',
-                          width: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '1.6rem',
-                        }}
-                      >
-                        {getPieceIcon(cell)}
-                      </Box>
-                    </Box>
+                    <CellContainer key={`${rowIndex}-${colIndex}`}>
+                      <BoardCell>{getPieceIcon(cell)}</BoardCell>
+                    </CellContainer>
                   ))}
-                </Grid>
+                </BoardRow>
               ))}
-            </Paper>
+            </GameBoard>
 
-            {/* Reset/New Game Button */}
-            <Button
-              color="primary"
-              onClick={resetGame}
-              size="large"
-              sx={{
-                width: 'fit-content',
-                fontSize: '16px',
-                mt: 2,
-                mx: 'auto',
-              }}
-            >
+            <ResetButton color="primary" onClick={resetGame} size="large">
               {gameStatus === 'won' ? 'New Game' : 'Reset Board'}
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+            </ResetButton>
+          </GameBoardContainer>
+        </GameContent>
+      </GameContainer>
     </ThemeProvider>
   );
 };
