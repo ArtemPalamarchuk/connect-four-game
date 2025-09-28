@@ -9,7 +9,7 @@ A React-based implementation of the classic Connect Four game built with TypeScr
 - npm
 
 ### Installation & Running
-```bash
+
 # Install dependencies
 npm install
 
@@ -22,14 +22,14 @@ npm test
 # Build for production
 npm run build
 
-How to Play
+# How to Play
 
 Players take turns dropping pieces into columns
 Click on a column button to drop your piece
 Get 4 pieces in a row (horizontally, vertically, or diagonally) to win
 Use the Reset/New Game button to start over
 
-Game Rules
+# Game Rules
 
 Red player always goes first
 Pieces fall to the lowest available spot in a column
