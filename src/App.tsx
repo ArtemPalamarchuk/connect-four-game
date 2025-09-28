@@ -17,8 +17,8 @@ type GameStatus = 'playing' | 'won';
 const ROWS = 4;
 const COLS = 4;
 const EMPTY_BOARD: Board = Array(ROWS)
-    .fill(null)
-    .map(() => Array(COLS).fill(null));
+  .fill(null)
+  .map(() => Array(COLS).fill(null));
 const PIECES_TO_WIN = 4;
 
 const theme = createTheme({
@@ -115,68 +115,73 @@ const ConnectFour: React.FC = () => {
   const [winner, setWinner] = useState<Player>(null);
 
   const checkWin = useCallback(
-      (board: Board, row: number, col: number, player: Player): boolean => {
-        const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+    (board: Board, row: number, col: number, player: Player): boolean => {
+      const directions = [
+        [0, 1],
+        [1, 0],
+        [1, 1],
+        [1, -1],
+      ];
 
-        for (const [deltaRow, deltaCol] of directions) {
-          let count = 1;
+      for (const [deltaRow, deltaCol] of directions) {
+        let count = 1;
 
-          for (const direction of [1, -1]) {
-            for (let i = 1; i < PIECES_TO_WIN; i++) {
-              const newRow = row + deltaRow * i * direction;
-              const newCol = col + deltaCol * i * direction;
-              if (
-                  newRow >= 0 &&
-                  newRow < ROWS &&
-                  newCol >= 0 &&
-                  newCol < COLS &&
-                  board[newRow][newCol] === player
-              ) {
-                count++;
-              } else {
-                break;
-              }
+        for (const direction of [1, -1]) {
+          for (let i = 1; i < PIECES_TO_WIN; i++) {
+            const newRow = row + deltaRow * i * direction;
+            const newCol = col + deltaCol * i * direction;
+            if (
+              newRow >= 0 &&
+              newRow < ROWS &&
+              newCol >= 0 &&
+              newCol < COLS &&
+              board[newRow][newCol] === player
+            ) {
+              count++;
+            } else {
+              break;
             }
-          }
-
-          if (count >= PIECES_TO_WIN) {
-            return true;
           }
         }
 
-        return false;
-      },
-      []
+        if (count >= PIECES_TO_WIN) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    []
   );
 
   const dropPiece = useCallback(
-      (col: number) => {
-        if (gameStatus === 'won') return;
+    (col: number) => {
+      if (gameStatus === 'won') return;
 
-        // Find the lowest available row in the column
-        let targetRow = -1;
-        for (let row = ROWS - 1; row >= 0; row--) {
-          if (board[row][col] === null) {
-            targetRow = row;
-            break;
-          }
+      // Find the lowest available row in the column
+      let targetRow = -1;
+      for (let row = ROWS - 1; row >= 0; row--) {
+        if (board[row][col] === null) {
+          targetRow = row;
+          break;
         }
+      }
 
-        if (targetRow === -1) return;
+      if (targetRow === -1) return;
 
-        const newBoard = board.map((row) => [...row]);
-        newBoard[targetRow][col] = currentPlayer;
+      const newBoard = board.map((row) => [...row]);
+      newBoard[targetRow][col] = currentPlayer;
 
-        if (checkWin(newBoard, targetRow, col, currentPlayer)) {
-          setGameStatus('won');
-          setWinner(currentPlayer);
-        } else {
-          setCurrentPlayer(currentPlayer === 'red' ? 'black' : 'red');
-        }
+      if (checkWin(newBoard, targetRow, col, currentPlayer)) {
+        setGameStatus('won');
+        setWinner(currentPlayer);
+      } else {
+        setCurrentPlayer(currentPlayer === 'red' ? 'black' : 'red');
+      }
 
-        setBoard(newBoard);
-      },
-      [board, currentPlayer, gameStatus, checkWin]
+      setBoard(newBoard);
+    },
+    [board, currentPlayer, gameStatus, checkWin]
   );
 
   const resetGame = useCallback(() => {
@@ -202,58 +207,58 @@ const ConnectFour: React.FC = () => {
   };
 
   return (
-      <ThemeProvider theme={theme}>
-        <GameContainer>
-          <HeaderSection>
-            <Typography component="h1" variant="h2">
-              Connect Four!
+    <ThemeProvider theme={theme}>
+      <GameContainer>
+        <HeaderSection>
+          <Typography component="h1" variant="h2">
+            Connect Four!
+          </Typography>
+          <Typography component="h2" variant="h6">
+            Get four of the same color in a row to win!
+          </Typography>
+        </HeaderSection>
+
+        <GameContent>
+          {gameStatus === 'won' && (
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Winner is {getPieceIcon(winner)}!
             </Typography>
-            <Typography component="h2" variant="h6">
-              Get four of the same color in a row to win!
-            </Typography>
-          </HeaderSection>
+          )}
 
-          <GameContent>
-            {gameStatus === 'won' && (
-                <Typography variant="h5" sx={{ mb: 2 }}>
-                  Winner is {getPieceIcon(winner)}!
-                </Typography>
-            )}
+          <GameBoardContainer>
+            <Grid container>
+              {Array.from({ length: COLS }, (_, col) => (
+                <DropButtonContainer key={col}>
+                  <DropButton
+                    variant="text"
+                    onClick={() => dropPiece(col)}
+                    disabled={gameStatus === 'won' || isColumnFull(col)}
+                  >
+                    {getPieceIcon(currentPlayer)}
+                  </DropButton>
+                </DropButtonContainer>
+              ))}
+            </Grid>
 
-            <GameBoardContainer>
-              <Grid container>
-                {Array.from({ length: COLS }, (_, col) => (
-                    <DropButtonContainer key={col}>
-                      <DropButton
-                          variant="text"
-                          onClick={() => dropPiece(col)}
-                          disabled={gameStatus === 'won' || isColumnFull(col)}
-                      >
-                        {getPieceIcon(currentPlayer)}
-                      </DropButton>
-                    </DropButtonContainer>
-                ))}
-              </Grid>
+            <GameBoard>
+              {board.map((row, rowIndex) => (
+                <BoardRow container key={rowIndex}>
+                  {row.map((cell, colIndex) => (
+                    <CellContainer key={`${rowIndex}-${colIndex}`}>
+                      <BoardCell>{getPieceIcon(cell)}</BoardCell>
+                    </CellContainer>
+                  ))}
+                </BoardRow>
+              ))}
+            </GameBoard>
 
-              <GameBoard>
-                {board.map((row, rowIndex) => (
-                    <BoardRow container key={rowIndex}>
-                      {row.map((cell, colIndex) => (
-                          <CellContainer key={`${rowIndex}-${colIndex}`}>
-                            <BoardCell>{getPieceIcon(cell)}</BoardCell>
-                          </CellContainer>
-                      ))}
-                    </BoardRow>
-                ))}
-              </GameBoard>
-
-              <ResetButton color="primary" onClick={resetGame} size="large">
-                {gameStatus === 'won' ? 'New Game' : 'Reset Board'}
-              </ResetButton>
-            </GameBoardContainer>
-          </GameContent>
-        </GameContainer>
-      </ThemeProvider>
+            <ResetButton color="primary" onClick={resetGame} size="large">
+              {gameStatus === 'won' ? 'New Game' : 'Reset Board'}
+            </ResetButton>
+          </GameBoardContainer>
+        </GameContent>
+      </GameContainer>
+    </ThemeProvider>
   );
 };
 
